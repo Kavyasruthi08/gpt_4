@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Personalized Recommendation System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                linear-gradient(135deg, #eef2ff, #f8fafc 45%, #eef6ff);
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        /* ================= HEADER ================= */
+
+        .header {
+            background:
+                linear-gradient(135deg, #312e81, #4f46e5, #2563eb);
+            color: white;
+            padding: 45px 20px 60px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.20);
+        }
+
+        .header-icon {
+            width: 72px;
+            height: 72px;
+            margin: auto;
+            background: rgba(255,255,255,0.16);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            margin-top: 18px;
+            font-size: 34px;
+            font-weight: 750;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            margin-top: 10px;
+            opacity: 0.88;
+            font-size: 16px;
+        }
+
+        .ollama-badge {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 7px 15px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            font-size: 13px;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            max-width: 1100px;
+            margin: -30px auto 50px;
+            padding: 0 18px;
+            position: relative;
+        }
+
+        /* ================= CARD ================= */
+
+        .card {
+            background: rgba(255,255,255,0.96);
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 26px;
+            margin-bottom: 20px;
+            box-shadow:
+                0 8px 30px rgba(15,23,42,0.07);
+        }
+
+        .card:hover {
+            box-shadow:
+                0 12px 35px rgba(15,23,42,0.10);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #eef2ff;
+            font-size: 21px;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 650;
+            margin-bottom: 7px;
+            color: #374151;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            background: #fff;
+            color: #111827;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99,102,241,0.10);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .button-row {
+            margin-top: 22px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            padding: 12px 19px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 650;
+            transition: all 0.2s ease;
+        }
+
+        .primary-btn {
+            color: white;
+            background:
+                linear-gradient(135deg, #4f46e5, #2563eb);
+            box-shadow: 0 5px 15px rgba(79,70,229,0.25);
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79,70,229,0.30);
+        }
+
+        .secondary-btn {
+            background: #eef2ff;
+            color: #3730a3;
+        }
+
+        .secondary-btn:hover {
+            background: #e0e7ff;
+        }
+
+        .success-btn {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .success-btn:hover {
+            background: #d1fae5;
+        }
+
+        /* ================= PROFILE ================= */
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .profile-item {
+            padding: 15px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+        }
+
+        .profile-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .profile-value {
+            font-size: 14px;
+            font-weight: 650;
+            color: #1e293b;
+        }
+
+        /* ================= ANALYSIS ================= */
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .analysis-item {
+            padding: 18px;
+            border-radius: 13px;
+            background:
+                linear-gradient(135deg, #f8fafc, #eef2ff);
+            border: 1px solid #e0e7ff;
+        }
+
+        .analysis-item strong {
+            display: block;
+            font-size: 11px;
+            color: #6366f1;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .analysis-item span {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* ================= RECOMMENDATIONS ================= */
+
+        .recommendation-card {
+            position: relative;
+            padding: 22px;
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            background: white;
+            transition: 0.25s;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(15,23,42,0.08);
+            border-color: #c7d2fe;
+        }
+
+        .recommendation-card.top {
+            border: 2px solid #818cf8;
+            background:
+                linear-gradient(135deg, #eef2ff, #ffffff);
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .recommendation-name {
+            font-size: 17px;
+            font-weight: 750;
+            padding-right: 90px;
+            color: #1e293b;
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .score {
+            font-weight: 750;
+            color: #4f46e5;
+            min-width: 45px;
+        }
+
+        .progress {
+            height: 9px;
+            flex: 1;
+            background: #e5e7eb;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background:
+                linear-gradient(90deg, #6366f1, #2563eb);
+            border-radius: 20px;
+        }
+
+        .reason {
+            margin-top: 13px;
+            color: #475569;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .reason strong {
+            color: #1e293b;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f1f5f9;
+            text-align: left;
+            padding: 13px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #475569;
+        }
+
+        td {
+            padding: 14px 13px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .rank-number {
+            font-weight: 750;
+            color: #4f46e5;
+        }
+
+        .score-pill {
+            display: inline-block;
+            padding: 5px 11px;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        /* ================= INTENT ================= */
+
+        .intent-result {
+            display: none;
+            margin-top: 15px;
+            padding: 16px;
+            border-radius: 12px;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            color: #3730a3;
+            font-weight: 700;
+        }
+
+        /* ================= LOADING ================= */
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e7ff;
+            border-top: 4px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #64748b;
+        }
+
+        /* ================= TOAST ================= */
+
+        .toast {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            background: #111827;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            font-size: 14px;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            padding: 25px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 18px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <div class="header-icon">
+        🤖
+    </div>
+
+    <h1>
+        Personalized Recommendation System
+    </h1>
+
+    <p>
+        Intelligent learning recommendations based on your profile,
+        interests and goals
+    </p>
+
+    <div class="ollama-badge">
+        ⚡ Powered by Ollama • Qwen2.5
+    </div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================= USER PROFILE INPUT ================= -->
+
+<section class="card">
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            👤
+        </div>
+
+        User Profile
+
+    </div>
+
+
+    <div class="form-grid">
+
+
+        <div class="form-group">
+
+            <label>Name</label>
+
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your name"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Age</label>
+
+            <input
+                type="number"
+                id="age"
+                placeholder="Enter your age"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Educational / Professional Background</label>
+
+            <input
+                type="text"
+                id="background"
+                placeholder="Example: Computer Science"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Interests</label>
+
+            <input
+                type="text"
+                id="interests"
+                placeholder="Example: Python, AI, Java"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Skill Level</label>
+
+            <select id="skill_level">
+
+                <option value="Beginner">
+                    Beginner
+                </option>
+
+                <option value="Intermediate">
+                    Intermediate
+                </option>
+
+                <option value="Advanced">
+                    Advanced
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Preferred Category / Type</label>
+
+            <input
+                type="text"
+                id="preference"
+                placeholder="Example: Practical Learning"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Goal</label>
+
+            <input
+                type="text"
+                id="goal"
+                placeholder="Example: Learn AI"
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Number of Recommendations</label>
+
+            <input
+                type="number"
+                id="num_recommendations"
+                value="4"
+                min="1"
+                max="10"
+            >
+
+        </div>
+
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            class="primary-btn"
+            onclick="generateRecommendations()"
+        >
+            ✨ Generate Personalized Recommendations
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= LOADING ================= -->
+
+<div
+    class="card loading"
+    id="loading"
+>
+
+    <div class="spinner"></div>
+
+    <p style="margin-top:15px;">
+        🤖 AI is analyzing your preferences...
+    </p>
+
+    <p style="margin-top:6px;font-size:13px;color:#64748b;">
+        Please wait while Ollama generates personalized recommendations.
+    </p>
+
+</div>
+
+
+<!-- ================= PROFILE OUTPUT ================= -->
+
+<section
+    class="card"
+    id="profileSection"
+    style="display:none;"
+>
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            📋
+        </div>
+
+        User Profile
+
+    </div>
+
+
+    <div
+        class="profile-grid"
+        id="profileOutput"
+    ></div>
+
+</section>
+
+
+<!-- ================= ANALYSIS ================= -->
+
+<section
+    class="card"
+    id="analysisSection"
+    style="display:none;"
+>
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            🧠
+        </div>
+
+        Preference Analysis
+
+    </div>
+
+
+    <div
+        class="analysis-grid"
+        id="analysisOutput"
+    ></div>
+
+</section>
+
+
+<!-- ================= RECOMMENDATIONS ================= -->
+
+<section
+    class="card"
+    id="recommendationSection"
+    style="display:none;"
+>
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            🎯
+        </div>
+
+        Personalized Recommendations
+
+    </div>
+
+
+    <div id="recommendationsOutput"></div>
+
+</section>
+
+
+<!-- ================= RANKING ================= -->
+
+<section
+    class="card"
+    id="rankingSection"
+    style="display:none;"
+>
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            🏆
+        </div>
+
+        Recommendation Ranking
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Rank</th>
+
+                    <th>Recommendation</th>
+
+                    <th>Suitability Score</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody
+                id="rankingOutput"
+            ></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- ================= REFINE ================= -->
+
+<section class="card">
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            💬
+        </div>
+
+        Refine Recommendations
+
+    </div>
+
+
+    <label>
+        Tell the system what you prefer or what you don't want.
+    </label>
+
+
+    <textarea
+        id="feedback"
+        placeholder="Example: I prefer AI and Python. Avoid web development resources and suggest more practical beginner-friendly courses."
+    ></textarea>
+
+
+    <div class="button-row">
+
+        <button
+            class="primary-btn"
+            onclick="refineRecommendations()"
+        >
+            🔄 Refine Recommendations
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= INTENT ================= -->
+
+<section class="card">
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            🤖
+        </div>
+
+        Intelligent Intent Detection
+
+    </div>
+
+
+    <input
+        type="text"
+        id="intentInput"
+        placeholder="Example: Give me more beginner-friendly options"
+    >
+
+
+    <div class="button-row">
+
+        <button
+            class="secondary-btn"
+            onclick="detectIntent()"
+        >
+            🔍 Detect Intent
+        </button>
+
+    </div>
+
+
+    <div
+        class="intent-result"
+        id="intentResult"
+    ></div>
+
+</section>
+
+
+<!-- ================= ACTIONS ================= -->
+
+<section class="card">
+
+    <div class="section-title">
+
+        <div class="section-icon">
+            ⚙️
+        </div>
+
+        Actions
+
+    </div>
+
+
+    <div class="button-row">
+
+        <button
+            class="secondary-btn"
+            onclick="showProfile()"
+        >
+            👤 Show Profile
+        </button>
+
+
+        <button
+            class="secondary-btn"
+            onclick="showExplanations()"
+        >
+            💡 Explain Recommendations
+        </button>
+
+
+        <button
+            class="success-btn"
+            onclick="saveRecommendations()"
+        >
+            💾 Save Recommendations
+        </button>
+
+    </div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+    Personalized Recommendation System
+    <br>
+
+    <span>
+        Building Applications using GPT-4 • Experiment 4
+    </span>
+
+</footer>
+
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+let currentProfile = {};
+let currentAnalysis = {};
+let currentRecommendations = [];
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+    toast.innerText = message;
+
+    toast.style.display = "block";
+
+    setTimeout(() => {
+
+        toast.style.display = "none";
+
+    }, 3000);
+
+}
+
+
+/* ============================================================
+   GENERATE
+============================================================ */
+
+async function generateRecommendations() {
+
+    const data = {
+
+        name:
+            document.getElementById("name").value,
+
+        age:
+            document.getElementById("age").value,
+
+        background:
+            document.getElementById("background").value,
+
+        interests:
+            document.getElementById("interests").value,
+
+        skill_level:
+            document.getElementById("skill_level").value,
+
+        preference:
+            document.getElementById("preference").value,
+
+        goal:
+            document.getElementById("goal").value,
+
+        num_recommendations:
+            document.getElementById(
+                "num_recommendations"
+            ).value
+
+    };
+
+
+    if (!data.name ||
+        !data.interests ||
+        !data.goal) {
+
+        showToast(
+            "⚠️ Please fill in the required fields."
+        );
+
+        return;
+    }
+
+
+    document.getElementById(
+        "loading"
+    ).style.display = "block";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/generate",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(data)
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            showToast(
+                "❌ " + result.error
+            );
+
+            return;
+        }
+
+
+        currentProfile =
+            result.profile;
+
+        currentAnalysis =
+            result.analysis;
+
+        currentRecommendations =
+            result.recommendations;
+
+
+        displayProfile(
+            result.profile
+        );
+
+
+        displayAnalysis(
+            result.analysis
+        );
+
+
+        displayRecommendations(
+            result.recommendations
+        );
+
+
+        showToast(
+            "✅ Recommendations generated successfully!"
+        );
+
+
+    }
+    catch (error) {
+
+        showToast(
+            "❌ Server error: " +
+            error
+        );
+
+    }
+    finally {
+
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
+
+    }
+
+}
+
+
+/* ============================================================
+   DISPLAY PROFILE
+============================================================ */
+
+function displayProfile(profile) {
+
+    const section =
+        document.getElementById(
+            "profileSection"
+        );
+
+    const output =
+        document.getElementById(
+            "profileOutput"
+        );
+
+
+    output.innerHTML = `
+
+        <div class="profile-item">
+            <div class="profile-label">Name</div>
+            <div class="profile-value">
+                ${profile.name}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Age</div>
+            <div class="profile-value">
+                ${profile.age}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Background</div>
+            <div class="profile-value">
+                ${profile.background}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Skill Level</div>
+            <div class="profile-value">
+                ${profile.skill_level}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Interests</div>
+            <div class="profile-value">
+                ${profile.interests}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Preference</div>
+            <div class="profile-value">
+                ${profile.preference}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Goal</div>
+            <div class="profile-value">
+                ${profile.goal}
+            </div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Recommendations</div>
+            <div class="profile-value">
+                ${profile.num_recommendations}
+            </div>
+        </div>
+
+    `;
+
+
+    section.style.display = "block";
+
+}
+
+
+/* ============================================================
+   DISPLAY ANALYSIS
+============================================================ */
+
+function displayAnalysis(analysis) {
+
+    const section =
+        document.getElementById(
+            "analysisSection"
+        );
+
+    const output =
+        document.getElementById(
+            "analysisOutput"
+        );
+
+
+    output.innerHTML = "";
+
+
+    Object.entries(
+        analysis
+    ).forEach(
+        ([key, value]) => {
+
+            const formattedKey =
+                key
+                    .replaceAll("_", " ")
+                    .replace(
+                        /\b\w/g,
+                        char =>
+                            char.toUpperCase()
+                    );
+
+
+            output.innerHTML += `
+
+                <div class="analysis-item">
+
+                    <strong>
+                        ${formattedKey}
+                    </strong>
+
+                    <span>
+                        ${value}
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    section.style.display = "block";
+
+}
+
+
+/* ============================================================
+   DISPLAY RECOMMENDATIONS
+============================================================ */
+
+function displayRecommendations(
+    recommendations
+) {
+
+    const section =
+        document.getElementById(
+            "recommendationSection"
+        );
+
+    const output =
+        document.getElementById(
+            "recommendationsOutput"
+        );
+
+
+    output.innerHTML = "";
+
+
+    recommendations.forEach(
+        (item, index) => {
+
+            const top =
+                index === 0
+                    ? "top"
+                    : "";
+
+
+            output.innerHTML += `
+
+                <div
+                    class="recommendation-card ${top}"
+                >
+
+                    <div class="rank-badge">
+
+                        ${
+                            index === 0
+                                ? "🏆 TOP MATCH"
+                                : "#" + (index + 1)
+                        }
+
+                    </div>
+
+
+                    <div class="recommendation-name">
+
+                        ${item.name}
+
+                    </div>
+
+
+                    <div class="score-row">
+
+                        <div class="score">
+
+                            ${item.score}%
+
+                        </div>
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-bar"
+                                style="
+                                    width:${item.score}%;
+                                "
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="reason">
+
+                        <strong>
+                            Why this is suitable:
+                        </strong>
+
+                        ${item.reason}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    section.style.display = "block";
+
+
+    displayRanking(
+        recommendations
+    );
+
+}
+
+
+/* ============================================================
+   RANKING
+============================================================ */
+
+function displayRanking(
+    recommendations
+) {
+
+    const section =
+        document.getElementById(
+            "rankingSection"
+        );
+
+    const output =
+        document.getElementById(
+            "rankingOutput"
+        );
+
+
+    output.innerHTML = "";
+
+
+    recommendations.forEach(
+        (item, index) => {
+
+            output.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        <span class="rank-number">
+                            ${index + 1}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${item.name}
+                    </td>
+
+                    <td>
+                        <span class="score-pill">
+                            ${item.score}%
+                        </span>
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    section.style.display = "block";
+
+}
+
+
+/* ============================================================
+   REFINE
+============================================================ */
+
+async function refineRecommendations() {
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        ).value.trim();
+
+
+    if (!feedback) {
+
+        showToast(
+            "⚠️ Please enter your feedback."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        currentRecommendations.length === 0
+    ) {
+
+        showToast(
+            "⚠️ Generate recommendations first."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/refine",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            profile:
+                                currentProfile,
+
+                            recommendations:
+                                currentRecommendations,
+
+                            feedback:
+                                feedback
+
+                        })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            showToast(
+                "❌ " + result.error
+            );
+
+            return;
+
+        }
+
+
+        currentRecommendations =
+            result.recommendations;
+
+
+        displayRecommendations(
+            currentRecommendations
+        );
+
+
+        showToast(
+            "🔄 Recommendations refined successfully!"
+        );
+
+    }
+    catch (error) {
+
+        showToast(
+            "❌ Refinement error: " +
+            error
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   INTENT DETECTION
+============================================================ */
+
+async function detectIntent() {
+
+    const input =
+        document.getElementById(
+            "intentInput"
+        ).value.trim();
+
+
+    if (!input) {
+
+        showToast(
+            "⚠️ Enter a request first."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/intent",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            input: input
+                        })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!result.success) {
+
+            showToast(
+                "❌ " + result.error
+            );
+
+            return;
+
+        }
+
+
+        const intentBox =
+            document.getElementById(
+                "intentResult"
+            );
+
+
+        intentBox.innerHTML = `
+
+            🤖 Detected Intent:
+
+            <strong>
+                ${result.intent}
+            </strong>
+
+        `;
+
+
+        intentBox.style.display =
+            "block";
+
+
+    }
+    catch (error) {
+
+        showToast(
+            "❌ Intent detection error."
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   SHOW PROFILE
+============================================================ */
+
+function showProfile() {
+
+    const section =
+        document.getElementById(
+            "profileSection"
+        );
+
+
+    if (
+        Object.keys(
+            currentProfile
+        ).length === 0
+    ) {
+
+        showToast(
+            "⚠️ Generate recommendations first."
+        );
+
+        return;
+
+    }
+
+
+    section.scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+/* ============================================================
+   EXPLANATIONS
+============================================================ */
+
+function showExplanations() {
+
+    if (
+        currentRecommendations.length === 0
+    ) {
+
+        showToast(
+            "⚠️ No recommendations available."
+        );
+
+        return;
+
+    }
+
+
+    const recommendationSection =
+        document.getElementById(
+            "recommendationSection"
+        );
+
+
+    recommendationSection.scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+    showToast(
+        "💡 Explanations are displayed with each recommendation."
+    );
+
+}
+
+
+/* ============================================================
+   SAVE
+============================================================ */
+
+async function saveRecommendations() {
+
+    if (
+        currentRecommendations.length === 0
+    ) {
+
+        showToast(
+            "⚠️ Generate recommendations first."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/save",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            recommendations:
+                                currentRecommendations
+
+                        })
+
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (result.success) {
+
+            showToast(
+                "💾 Recommendations saved successfully!"
+            );
+
+        }
+        else {
+
+            showToast(
+                "❌ " + result.error
+            );
+
+        }
+
+    }
+    catch (error) {
+
+        showToast(
+            "❌ Save error: " +
+            error
+        );
+
+    }
+
+}
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+PERSONALIZED RECOMMENDATIONS
+==================================================
+
+Saved On: 2026-09-04 13:43:46
+
+1. AI for Everyone by Andrew Ng on Coursera
+Suitability Score: 95%
+Reason: This course is highly recommended for beginners and focuses on practical AI concepts. It is taught by Andrew Ng, a leading figure in AI education, making it both comprehensive and accessible.
+
+2. Build Your Own Neural Network in Java by T. K. Rasti
+Suitability Score: 93%
+Reason: This book is perfect for Java enthusiasts who want to learn AI practically. It provides step-by-step instructions and practical exercises to help you build your own neural networks, catering well to your background and skill level.
+
